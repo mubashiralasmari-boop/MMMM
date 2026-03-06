@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>شفرتنا</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: #0d0d14;
+  color: #e2e2f0;
+  min-height: 100vh;
+  padding: 1.5rem 1rem 5rem;
+}
+
+.wrap { max-width: 680px; margin: 0 auto; }
+
+/* Header */
+.hdr { text-align:center; margin-bottom:1.5rem; }
+.hdr h1 {
+  font-size:2rem; font-weight:900;
+  background:linear-gradient(135deg,#8b5cf6,#c084fc);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hdr p { color:#6b7280; font-size:0.88rem; margin-top:0.2rem; }
+
+/* Tabs */
+.tabs {
+  display:-webkit-box; display:flex;
+  background:#161621; border:1px solid rgba(139,92,246,0.25);
+  border-radius:12px; padding:4px; gap:4px; margin-bottom:1rem;
+}
+.tab {
+  -webkit-box-flex:1; flex:1;
+  padding:0.6rem; border-radius:9px; border:none;
+  background:transparent; color:#6b7280;
+  font-family:'Tajawal',sans-serif; font-size:0.95rem; font-weight:700;
+  cursor:pointer; -webkit-appearance:none;
+}
+.tab.on {
+  background:-webkit-linear-gradient(135deg,#7c3aed,#a855f7);
+  background:linear-gradient(135deg,#7c3aed,#a855f7);
+  color:#fff;
+}
+
+/* Section */
+.sec {
+  background:#161621; border:1px solid rgba(139,92,246,0.2);
+  border-radius:14px; padding:1.1rem; margin-bottom:0.9rem;
+}
+.lbl { font-size:0.82rem; font-weight:700; color:#6b7280; margin-bottom:0.6rem; }
+
+/* Inputs */
+textarea, input[type=text] {
+  width:100%; background:#0d0d14;
+  border:1px solid rgba(139,92,246,0.2); border-radius:9px;
+  padding:0.85rem 0.9rem; color:#e2e2f0;
+  font-family:'Tajawal',sans-serif; font-size:1rem; line-height:1.6;
+  outline:none; -webkit-appearance:none; appearance:none;
+}
+textarea { resize:vertical; min-height:100px; direction:rtl; }
+textarea::placeholder, input::placeholder { color:#4b4b60; }
+input[type=text] { direction:ltr; text-align:left; }
+
+/* Mode row */
+.mode-row {
+  display:-webkit-box; display:flex;
+  gap:6px; margin-bottom:0.9rem;
+}
+.mbtn {
+  -webkit-box-flex:1; flex:1;
+  padding:0.6rem; border-radius:9px;
+  border:1px solid rgba(139,92,246,0.25);
+  background:#0d0d14; color:#6b7280;
+  font-family:'Tajawal',sans-serif; font-size:0.9rem; font-weight:700;
+  cursor:pointer; -webkit-appearance:none;
+}
+.mbtn.on {
+  background:rgba(124,58,237,0.15);
+  border-color:#7c3aed; color:#c084fc;
+}
+
+/* URL section */
+.url-sec { display:none; }
+
+/* Action button */
+.abtn {
+  width:100%; padding:0.85rem;
+  background:-webkit-linear-gradient(135deg,#7c3aed,#a855f7);
+  background:linear-gradient(135deg,#7c3aed,#a855f7);
+  border:none; border-radius:11px; color:#fff;
+  font-family:'Tajawal',sans-serif; font-size:1.05rem; font-weight:700;
+  cursor:pointer; margin-bottom:0.9rem; -webkit-appearance:none;
+}
+
+/* Result section - always in DOM, toggled by JS */
+.res-sec { display:none; }
+
+.ok-badge {
+  background:rgba(16,185,129,0.12);
+  border:1px solid rgba(16,185,129,0.35);
+  border-radius:8px; padding:0.55rem 0.9rem;
+  color:#10b981; font-size:0.88rem; font-weight:700;
+  text-align:center; margin-bottom:0.7rem;
+}
+
+.res-text {
+  background:#0d0d14;
+  border:1px solid rgba(139,92,246,0.2);
+  border-radius:9px; padding:0.85rem 0.9rem;
+  min-height:48px; word-break:break-all;
+  line-height:1.7; font-size:0.95rem;
+  color:#c084fc; font-weight:600;
+  direction:ltr; text-align:left;
+  white-space:pre-wrap; margin-bottom:0.7rem;
+}
+.res-text.ar { direction:rtl; text-align:right; color:#e2e2f0; font-weight:400; }
+
+.cbtn {
+  width:100%; padding:0.75rem;
+  background:rgba(124,58,237,0.12);
+  border:1px solid rgba(139,92,246,0.35);
+  border-radius:9px; color:#c084fc;
+  font-family:'Tajawal',sans-serif;
+  font-size:0.95rem; font-weight:700;
+  cursor:pointer; -webkit-appearance:none;
+}
+.cbtn.ok { background:rgba(16,185,129,0.12); border-color:#10b981; color:#10b981; }
+
+/* Key section */
+.key-hdr {
+  display:-webkit-box; display:flex;
+  -webkit-box-pack:justify; justify-content:space-between;
+  -webkit-box-align:center; align-items:center;
+  background:#161621; border:1px solid rgba(139,92,246,0.2);
+  border-radius:12px; padding:0.8rem 1.1rem;
+  cursor:pointer; margin-bottom:0;
+}
+.key-hdr span { font-size:0.85rem; font-weight:700; color:#6b7280; }
+.arr { color:#6b7280; font-size:0.7rem; -webkit-transition:transform 0.3s; transition:transform 0.3s; }
+.arr.open { -webkit-transform:rotate(180deg); transform:rotate(180deg); }
+
+.key-body {
+  max-height:0; overflow:hidden;
+  -webkit-transition:max-height 0.35s ease; transition:max-height 0.35s ease;
+  background:#161621;
+  border:1px solid rgba(139,92,246,0.2); border-top:none;
+  border-radius:0 0 12px 12px;
+}
+.key-body.open { max-height:900px; }
+
+.key-grid {
+  display:-webkit-box; display:flex;
+  -webkit-flex-wrap:wrap; flex-wrap:wrap;
+  gap:0.4rem; padding:0.9rem;
+}
+.kc {
+  background:#0d0d14;
+  border:1px solid rgba(139,92,246,0.15);
+  border-radius:8px; padding:0.4rem 0.5rem;
+  text-align:center; min-width:55px;
+}
+.kc.sp { border-color:rgba(139,92,246,0.4); background:rgba(124,58,237,0.08); }
+.kchar { font-size:0.95rem; font-weight:700; color:#c084fc; }
+.knum  { font-size:0.68rem; color:#6b7280; }
+
+/* hint */
+.hint { font-size:0.75rem; color:#6b7280; margin-top:0.45rem; }
+
+/* Panel hidden */
+.panel { display:none; }
+.panel.on { display:block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hdr">
+    <h1>🔐 شفرتنا</h1>
+    <p>لغتنا السرية — لا أحد يعرفها غيرنا</p>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab on" id="t1" onclick="showTab(1)">تشفير ✏️</button>
+    <button class="tab"    id="t2" onclick="showTab(2)">فك الشفرة 🔓</button>
+  </div>
+
+  <!-- ═══ ENCODE ═══ -->
+  <div class="panel on" id="p1">
+
+    <div class="sec">
+      <div class="lbl">✍️ اكتب رسالتك</div>
+      <textarea id="msg" placeholder="اكتب هنا..."></textarea>
+    </div>
+
+    <div class="mode-row">
+      <button class="mbtn on" id="m1" onclick="setMode(1)">🔢 أرقام فقط</button>
+      <button class="mbtn"    id="m2" onclick="setMode(2)">🔗 رابط مخفي</button>
+    </div>
+
+    <div class="sec url-sec" id="urlSec">
+      <div class="lbl">🔗 الصق أي رابط</div>
+      <input type="text" id="urlIn" placeholder="https://..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <div class="hint">💡 الرابط يشتغل للكل — وأخوك بس يعرف السر</div>
+    </div>
+
+    <button class="abtn" onclick="doEncode()">🔒 شفّر الرسالة</button>
+
+    <div class="sec res-sec" id="encBox">
+      <div class="ok-badge">✅ تم التشفير — انسخ وأرسل!</div>
+      <div class="lbl" id="encLbl">🔢 الشفرة</div>
+      <div class="res-text" id="encOut"></div>
+      <button class="cbtn" id="encCopy" onclick="doCopy('encOut','encCopy')">📋 انسخ وأرسل</button>
+    </div>
+
+  </div>
+
+  <!-- ═══ DECODE ═══ -->
+  <div class="panel" id="p2">
+
+    <div class="sec">
+      <div class="lbl">🔢 الصق الشفرة أو الرابط</div>
+      <textarea id="coded" placeholder="الصق هنا..." style="direction:ltr;text-align:left;"></textarea>
+    </div>
+
+    <button class="abtn" onclick="doDecode()">🔓 اكشف الرسالة</button>
+
+    <div class="sec res-sec" id="decBox">
+      <div class="ok-badge">✅ تم فك الشفرة!</div>
+      <div class="lbl">💬 الرسالة</div>
+      <div class="res-text ar" id="decOut"></div>
+      <button class="cbtn" id="decCopy" onclick="doCopy('decOut','decCopy')">📋 انسخ الرسالة</button>
+    </div>
+
+  </div>
+
+  <!-- ═══ KEY TABLE ═══ -->
+  <div style="margin-top:0.5rem;">
+    <div class="key-hdr" onclick="toggleKey()">
+      <span>🗝️ جدول الشفرة</span>
+      <span class="arr" id="arr">▼</span>
+    </div>
+    <div class="key-body" id="keyBody">
+      <div class="key-grid" id="keyGrid"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════
+// CIPHER
+// ══════════════════════
+var ENC = {
+  'ا':47,'ب':83,'ت':16,'ث':62,'ج':91,
+  'ح':34,'خ':78,'د':55,'ذ':23,'ر':69,
+  'ز':42,'س':87,'ش':11,'ص':74,'ض':38,
+  'ط':96,'ظ':27,'ع':53,'غ':19,'ف':65,
+  'ق':31,'ك':88,'ل':44,'م':72,'ن':56,
+  'ه':13,'و':39,'ي':67,'ى':25,'ة':81,
+  'أ':58,'إ':94,'آ':36,'ئ':49,'ؤ':77,'ء':22,
+  ' ':100,'،':101,'.':102,'؟':103,'!':104
+};
+
+var DEC = {};
+for (var k in ENC) { DEC[String(ENC[k])] = k; }
+
+function encode(txt) {
+  var out = [];
+  for (var i = 0; i < txt.length; i++) {
+    var ch = txt[i];
+    out.push(ENC[ch] !== undefined ? String(ENC[ch]) : ch);
+  }
+  return out.join('.');
+}
+
+function decode(raw) {
+  // strip invisible unicode chars
+  var clean = '';
+  for (var i = 0; i < raw.length; i++) {
+    var code = raw.charCodeAt(i);
+    if (code !== 0x200b && code !== 0x200e && code !== 0x200f &&
+        code !== 0xfeff && code !== 0x00ad) {
+      clean += raw[i];
+    }
+  }
+  clean = clean.replace(/\r/g,'').trim();
+  // normalize - or . as separator
+  clean = clean.replace(/-/g,'.');
+  var parts = clean.split('.');
+  var out = '';
+  for (var j = 0; j < parts.length; j++) {
+    out += DEC[parts[j]] !== undefined ? DEC[parts[j]] : parts[j];
+  }
+  return out;
+}
+
+function buildLink(url, cipher) {
+  var enc = btoa(unescape(encodeURIComponent(cipher)));
+  var sep = url.indexOf('?') >= 0 ? '&' : '?';
+  return url + sep + 'ref=' + enc;
+}
+
+function extractCipher(raw) {
+  var clean = raw.replace(/[\s\r\n]/g,'');
+  if (clean.indexOf('ref=') < 0) return raw.trim();
+  var idx = clean.indexOf('ref=');
+  var val = clean.substring(idx + 4);
+  var end = val.indexOf('&');
+  if (end >= 0) val = val.substring(0, end);
+  try { return decodeURIComponent(escape(atob(val))); } catch(e) {}
+  try { return decodeURIComponent(val); } catch(e) {}
+  return raw.trim();
+}
+
+// ══════════════════════
+// MODE
+// ══════════════════════
+var mode = 1;
+function setMode(m) {
+  mode = m;
+  document.getElementById('m1').className = 'mbtn' + (m===1?' on':'');
+  document.getElementById('m2').className = 'mbtn' + (m===2?' on':'');
+  document.getElementById('urlSec').style.display = m===2 ? 'block' : 'none';
+  document.getElementById('encBox').style.display = 'none';
+}
+
+// ══════════════════════
+// TABS
+// ══════════════════════
+function showTab(n) {
+  document.getElementById('t1').className = 'tab' + (n===1?' on':'');
+  document.getElementById('t2').className = 'tab' + (n===2?' on':'');
+  document.getElementById('p1').className = 'panel' + (n===1?' on':'');
+  document.getElementById('p2').className = 'panel' + (n===2?' on':'');
+}
+
+// ══════════════════════
+// ENCODE
+// ══════════════════════
+function doEncode() {
+  var msg = document.getElementById('msg').value;
+  if (!msg || msg.trim() === '') {
+    alert('اكتب الرسالة أولاً');
+    return;
+  }
+
+  var cipher = encode(msg);
+  var output = cipher;
+
+  if (mode === 2) {
+    var rawUrl = document.getElementById('urlIn').value;
+    // strip all whitespace manually
+    var url = '';
+    for (var i = 0; i < rawUrl.length; i++) {
+      var c = rawUrl.charCodeAt(i);
+      if (c > 32 && c !== 0x200b && c !== 0x200e &&
+          c !== 0x200f && c !== 0xfeff) {
+        url += rawUrl[i];
+      }
+    }
+    if (url.length < 4) {
+      alert('الصق الرابط في الحقل أولاً');
+      return;
+    }
+    if (url.indexOf('http') !== 0) url = 'https://' + url;
+    output = buildLink(url, cipher);
+    document.getElementById('encLbl').innerHTML = '🔗 الرابط السري';
+  } else {
+    document.getElementById('encLbl').innerHTML = '🔢 الشفرة';
+  }
+
+  document.getElementById('encOut').innerHTML = '';
+  document.getElementById('encOut').appendChild(document.createTextNode(output));
+  document.getElementById('encCopy').className = 'cbtn';
+  document.getElementById('encCopy').innerHTML = '📋 انسخ وأرسل';
+
+  // Show result box
+  var box = document.getElementById('encBox');
+  box.style.cssText = 'display:block;background:#161621;border:1px solid rgba(139,92,246,0.2);border-radius:14px;padding:1.1rem;margin-bottom:0.9rem;';
+}
+
+// ══════════════════════
+// DECODE
+// ══════════════════════
+function doDecode() {
+  var raw = document.getElementById('coded').value;
+  if (!raw || raw.trim() === '') {
+    alert('الصق الشفرة أو الرابط أولاً');
+    return;
+  }
+
+  var cipher = extractCipher(raw);
+  var result = decode(cipher);
+
+  document.getElementById('decOut').innerHTML = '';
+  document.getElementById('decOut').appendChild(document.createTextNode(result));
+  document.getElementById('decCopy').className = 'cbtn';
+  document.getElementById('decCopy').innerHTML = '📋 انسخ الرسالة';
+
+  var box = document.getElementById('decBox');
+  box.style.cssText = 'display:block;background:#161621;border:1px solid rgba(139,92,246,0.2);border-radius:14px;padding:1.1rem;margin-bottom:0.9rem;';
+}
+
+// ══════════════════════
+// COPY
+// ══════════════════════
+function doCopy(id, btnId) {
+  var text = document.getElementById(id).textContent || document.getElementById(id).innerText;
+  text = text.trim();
+  var btn = document.getElementById(btnId);
+
+  function onDone() {
+    btn.className = 'cbtn ok';
+    btn.innerHTML = '✅ تم النسخ!';
+    setTimeout(function() {
+      btn.className = 'cbtn';
+      btn.innerHTML = '📋 انسخ';
+    }, 2500);
+  }
+
+  // Method 1: navigator.clipboard
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(onDone, function() { fallback(text, onDone); });
+    return;
+  }
+  fallback(text, onDone);
+}
+
+function fallback(text, cb) {
+  // Method 2: execCommand
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  ta.setSelectionRange(0, 99999); // for mobile
+  try {
+    var ok = document.execCommand('copy');
+    if (ok) { cb(); }
+  } catch(e) {}
+  document.body.removeChild(ta);
+}
+
+// ══════════════════════
+// KEY TOGGLE
+// ══════════════════════
+function toggleKey() {
+  var b = document.getElementById('keyBody');
+  var a = document.getElementById('arr');
+  if (b.className === 'key-body') {
+    b.className = 'key-body open';
+    a.className = 'arr open';
+  } else {
+    b.className = 'key-body';
+    a.className = 'arr';
+  }
+}
+
+// ══════════════════════
+// BUILD KEY GRID
+// ══════════════════════
+(function() {
+  var labels = { ' ':'مسافة','،':'فاصلة','.':'نقطة','؟':'؟','!':'!' };
+  var grid = document.getElementById('keyGrid');
+  for (var ch in ENC) {
+    var cell = document.createElement('div');
+    cell.className = 'kc' + (labels[ch] ? ' sp' : '');
+    var top = document.createElement('div');
+    top.className = 'kchar';
+    top.appendChild(document.createTextNode(labels[ch] || ch));
+    var bot = document.createElement('div');
+    bot.className = 'knum';
+    bot.appendChild(document.createTextNode(ENC[ch]));
+    cell.appendChild(top);
+    cell.appendChild(bot);
+    grid.appendChild(cell);
+  }
+})();
+</script>
+</body>
+</html>
