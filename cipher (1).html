@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شفرتنا</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: #0d0d14;
+  color: #e2e2f0;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+}
+
+.wrap {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.header h1 {
+  font-size: 2.4rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #8b5cf6, #c084fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.3rem;
+}
+
+.header p {
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  background: #161621;
+  border: 1px solid rgba(139,92,246,0.25);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 1.5rem;
+  gap: 4px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(124,58,237,0.4);
+}
+
+/* Panel */
+.panel { display: none; }
+.panel.active { display: flex; flex-direction: column; gap: 1rem; }
+
+/* Box */
+.box {
+  background: #161621;
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 14px;
+  padding: 1.2rem;
+}
+
+.box-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #6b7280;
+  margin-bottom: 0.7rem;
+}
+
+textarea {
+  width: 100%;
+  background: #0d0d14;
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 9px;
+  padding: 0.9rem 1rem;
+  color: #e2e2f0;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 1rem;
+  line-height: 1.7;
+  resize: vertical;
+  min-height: 120px;
+  outline: none;
+  transition: border-color 0.2s;
+  direction: rtl;
+}
+
+textarea:focus { border-color: #7c3aed; }
+textarea::placeholder { color: #4b4b60; }
+#decodeInput { direction: ltr; text-align: left; }
+
+/* Result */
+.result-wrap { display: block; }
+
+.result {
+  background: #0d0d14;
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 9px;
+  padding: 0.9rem 1rem;
+  min-height: 56px;
+  line-height: 1.8;
+  word-break: break-all;
+  font-size: 1rem;
+  color: #c084fc;
+  font-weight: 600;
+  direction: ltr;
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+.result.arabic {
+  direction: rtl;
+  text-align: right;
+  color: #e2e2f0;
+  font-weight: 400;
+}
+
+.result-placeholder {
+  color: #4b4b60;
+  font-size: 0.9rem;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.copy-btn {
+  width: 100%;
+  padding: 0.75rem;
+  background: rgba(124,58,237,0.15);
+  border: 1px solid rgba(139,92,246,0.4);
+  border-radius: 9px;
+  color: #c084fc;
+  font-size: 0.95rem;
+  font-family: 'Tajawal', sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: none;
+  margin-top: 0.7rem;
+  text-align: center;
+}
+
+.copy-btn.show { display: block; }
+.copy-btn:hover { background: rgba(124,58,237,0.3); color: #fff; }
+.copy-btn.done { background: rgba(16,185,129,0.15); border-color: #10b981; color: #10b981; }
+
+/* Key Section */
+.key-section { margin-top: 0.5rem; }
+
+.key-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #161621;
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 12px;
+  padding: 0.85rem 1.2rem;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.2s;
+}
+
+.key-header:hover { border-color: #7c3aed; }
+.key-header span { font-size: 0.88rem; font-weight: 700; color: #6b7280; }
+.arrow { font-size: 0.7rem; color: #6b7280; transition: transform 0.3s; display: inline-block; }
+.arrow.open { transform: rotate(180deg); }
+
+.key-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s ease;
+  background: #161621;
+  border: 1px solid rgba(139,92,246,0.2);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+}
+
+.key-body.open { max-height: 800px; }
+
+.key-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  gap: 0.45rem;
+  padding: 1rem;
+}
+
+.key-cell {
+  background: #0d0d14;
+  border: 1px solid rgba(139,92,246,0.15);
+  border-radius: 8px;
+  padding: 0.45rem 0.3rem;
+  text-align: center;
+}
+
+.key-cell.special {
+  border-color: rgba(139,92,246,0.4);
+  background: rgba(124,58,237,0.08);
+}
+
+.kc { font-size: 1rem; font-weight: 700; color: #c084fc; }
+.kn { font-size: 0.72rem; color: #6b7280; margin-top: 2px; }
+
+/* Mode Toggle */
+.mode-toggle {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 0;
+}
+
+.mode-btn {
+  flex: 1;
+  padding: 0.55rem 0.8rem;
+  border-radius: 9px;
+  border: 1px solid rgba(139,92,246,0.25);
+  background: #0d0d14;
+  color: #6b7280;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mode-btn.active {
+  background: rgba(124,58,237,0.15);
+  border-color: #7c3aed;
+  color: #c084fc;
+}
+
+#urlInput {
+  width: 100%;
+  background: #0d0d14;
+  border: 1px solid rgba(139,92,246,0.2);
+  border-radius: 9px;
+  padding: 0.8rem 1rem;
+  color: #e2e2f0;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 0.92rem;
+  outline: none;
+  direction: ltr;
+  text-align: left;
+  transition: border-color 0.2s;
+  margin-bottom: 0.5rem;
+}
+
+#urlInput:focus { border-color: #7c3aed; }
+#urlInput::placeholder { color: #4b4b60; }
+
+.url-hint {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin-top: 0.3rem;
+}
+
+/* Success banner */
+.success-banner {
+  display: none;
+  background: rgba(16,185,129,0.12);
+  border: 1px solid rgba(16,185,129,0.4);
+  border-radius: 9px;
+  padding: 0.6rem 1rem;
+  color: #10b981;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 0.7rem;
+  animation: popIn 0.3s ease;
+}
+.success-banner.show { display: block; }
+@keyframes popIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(60px);
+  background: #10b981;
+  color: white;
+  padding: 0.55rem 1.4rem;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  pointer-events: none;
+  transition: transform 0.28s ease;
+  z-index: 999;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <h1>🔐 شفرتنا</h1>
+    <p>لغتنا السرية — لا أحد يعرفها غيرنا</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-encode" onclick="switchTab('encode')">تشفير ✏️</button>
+    <button class="tab-btn" id="tab-decode" onclick="switchTab('decode')">فك الشفرة 🔓</button>
+  </div>
+
+  <!-- Encode -->
+  <div class="panel active" id="panel-encode">
+    <div class="box">
+      <div class="box-label">✍️ اكتب رسالتك بالعربي</div>
+      <textarea id="encodeInput" placeholder="اكتب هنا..." oninput="doEncode()"></textarea>
+    </div>
+
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="modeNumbers" onclick="setMode('numbers')">🔢 أرقام فقط</button>
+      <button class="mode-btn" id="modeLink" onclick="setMode('link')">🔗 رابط مخفي</button>
+    </div>
+
+    <!-- URL input (shown in link mode) -->
+    <div class="box" id="urlBox" style="display:none;">
+      <div class="box-label">🎬 الصق أي رابط (يوتيوب، تويتر، أي شيء...)</div>
+      <input type="text" id="urlInput" placeholder="https://...الصق أي رابط" oninput="doEncode()" />
+      <div class="url-hint">💡 الرابط يشتغل طبيعي لكل الناس — وأخوك وبس يعرف السر</div>
+    </div>
+
+    <div class="box">
+      <div class="box-label" id="resultLabel">🔢 الشفرة السرية</div>
+      <div class="success-banner" id="encodeBanner">✅ تم التشفير — انسخ وأرسل!</div>
+      <div class="result-wrap">
+        <div class="result" id="encodeResult"><span class="result-placeholder">الشفرة ستظهر هنا تلقائياً...</span></div>
+        <button class="copy-btn show" id="encodeCopy" onclick="doCopy('encodeResult','encodeCopy')">📋 انسخ الشفرة</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Decode -->
+  <div class="panel" id="panel-decode">
+    <div class="box">
+      <div class="box-label">🔢 الصق الشفرة أو الرابط هنا</div>
+      <textarea id="decodeInput" placeholder="الصق أرقام أو رابط يوتيوب..." oninput="doDecode()"></textarea>
+    </div>
+    <div class="box">
+      <div class="box-label">💬 الرسالة</div>
+      <div class="success-banner" id="decodeBanner">✅ تم فك الشفرة!</div>
+      <div class="result-wrap">
+        <div class="result arabic" id="decodeResult"><span class="result-placeholder">الرسالة ستظهر هنا تلقائياً...</span></div>
+        <button class="copy-btn show" id="decodeCopy" onclick="doCopy('decodeResult','decodeCopy')">📋 انسخ الرسالة</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Key Table -->
+  <div class="key-section">
+    <div class="key-header" onclick="toggleKey()">
+      <span>🗝️ جدول الشفرة</span>
+      <span class="arrow" id="arrow">▼</span>
+    </div>
+    <div class="key-body" id="keyBody">
+      <div class="key-grid" id="keyGrid"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">تم النسخ ✓</div>
+
+<script>
+// ══════════════════════════
+//  CIPHER MAP
+// ══════════════════════════
+const ENC = {
+  'ا':47,'ب':83,'ت':16,'ث':62,'ج':91,
+  'ح':34,'خ':78,'د':55,'ذ':23,'ر':69,
+  'ز':42,'س':87,'ش':11,'ص':74,'ض':38,
+  'ط':96,'ظ':27,'ع':53,'غ':19,'ف':65,
+  'ق':31,'ك':88,'ل':44,'م':72,'ن':56,
+  'ه':13,'و':39,'ي':67,'ى':25,'ة':81,
+  'أ':58,'إ':94,'آ':36,'ئ':49,'ؤ':77,'ء':22,
+  ' ':100, '،':101, '.':102, '؟':103, '!':104
+};
+
+const DEC = {};
+for (const [ch, code] of Object.entries(ENC)) {
+  DEC[String(code)] = ch;
+}
+
+const SEP = '.';
+
+function encode(text) {
+  return text.split('').map(ch => {
+    return ENC[ch] !== undefined ? String(ENC[ch]) : ch;
+  }).join(SEP);
+}
+
+function decode(text) {
+  // normalize: replace dash-based separators too for compatibility
+  const clean = text.trim().replace(/\s+/g, '');
+  return clean.split(SEP).map(p => DEC[p] !== undefined ? DEC[p] : p).join('');
+}
+
+// ── Mode ──
+let currentMode = 'numbers';
+
+function setMode(mode) {
+  currentMode = mode;
+  document.getElementById('modeNumbers').classList.toggle('active', mode === 'numbers');
+  document.getElementById('modeLink').classList.toggle('active', mode === 'link');
+  document.getElementById('urlBox').style.display = mode === 'link' ? 'block' : 'none';
+  document.getElementById('resultLabel').textContent = mode === 'link' ? '🔗 الرابط السري' : '🔢 الشفرة السرية';
+  doEncode();
+}
+
+function buildSecretLink(url, cipher) {
+  try {
+    // Encode cipher for URL safety
+    const encoded = btoa(unescape(encodeURIComponent(cipher)));
+    const separator = url.includes('?') ? '&' : '?';
+    return url + separator + 'ref=' + encoded;
+  } catch(e) {
+    return url + '?ref=' + encodeURIComponent(cipher);
+  }
+}
+
+function extractCipherFromLink(text) {
+  // Check if it looks like a URL
+  if (!text.startsWith('http')) return text;
+  try {
+    const url = new URL(text);
+    const ref = url.searchParams.get('ref');
+    if (ref) {
+      try {
+        return decodeURIComponent(escape(atob(ref)));
+      } catch {
+        return decodeURIComponent(ref);
+      }
+    }
+  } catch(e) {}
+  return text;
+}
+
+// ── UI ──
+function doEncode() {
+  const val = document.getElementById('encodeInput').value;
+  const box = document.getElementById('encodeResult');
+  const btn = document.getElementById('encodeCopy');
+  if (!val) {
+    box.innerHTML = '<span class="result-placeholder">الشفرة ستظهر هنا تلقائياً...</span>';
+    btn.classList.remove('show');
+    document.getElementById('encodeBanner').classList.remove('show');
+    return;
+  }
+  const cipher = encode(val);
+  let output = cipher;
+  if (currentMode === 'link') {
+    const url = document.getElementById('urlInput').value.trim();
+    if (url && url.startsWith('http')) {
+      output = buildSecretLink(url, cipher);
+    } else {
+      box.innerHTML = '<span class="result-placeholder">الصق رابط صحيح أولاً...</span>';
+      btn.classList.remove('show');
+      return;
+    }
+  }
+  box.textContent = output;
+  btn.classList.add('show');
+  btn.classList.remove('done');
+  btn.textContent = '📋 انسخ الشفرة';
+  document.getElementById('encodeBanner').classList.add('show');
+}
+
+function doDecode() {
+  const val = document.getElementById('decodeInput').value.trim();
+  const box = document.getElementById('decodeResult');
+  const btn = document.getElementById('decodeCopy');
+  if (!val) {
+    box.innerHTML = '<span class="result-placeholder">الرسالة ستظهر هنا تلقائياً...</span>';
+    btn.classList.remove('show');
+    document.getElementById('decodeBanner').classList.remove('show');
+    return;
+  }
+  // Auto-detect: URL or raw cipher
+  const cipher = extractCipherFromLink(val);
+  box.textContent = decode(cipher);
+  btn.classList.add('show');
+  btn.classList.remove('done');
+  btn.textContent = '📋 انسخ الرسالة';
+  document.getElementById('decodeBanner').classList.add('show');
+}
+
+function switchTab(tab) {
+  document.getElementById('tab-encode').classList.toggle('active', tab === 'encode');
+  document.getElementById('tab-decode').classList.toggle('active', tab === 'decode');
+  document.getElementById('panel-encode').classList.toggle('active', tab === 'encode');
+  document.getElementById('panel-decode').classList.toggle('active', tab === 'decode');
+}
+
+function toggleKey() {
+  document.getElementById('keyBody').classList.toggle('open');
+  document.getElementById('arrow').classList.toggle('open');
+}
+
+function doCopy(resultId, btnId) {
+  const text = document.getElementById(resultId).textContent.trim();
+  const btn = document.getElementById(btnId);
+  const finish = () => {
+    btn.textContent = 'تم ✓';
+    btn.classList.add('done');
+    showToast();
+    setTimeout(() => { btn.textContent = 'نسخ'; btn.classList.remove('done'); }, 2000);
+  };
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(finish).catch(finish);
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    finish();
+  }
+}
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+// Build grid
+(function() {
+  const labels = { ' ':'مسافة (100)','،':'فاصلة (101)','.':'نقطة (102)','؟':'؟ (103)','!':'! (104)' };
+  const grid = document.getElementById('keyGrid');
+  for (const [ch, code] of Object.entries(ENC)) {
+    const cell = document.createElement('div');
+    cell.className = 'key-cell' + (labels[ch] ? ' special' : '');
+    cell.innerHTML = `<div class="kc">${labels[ch] || ch}</div><div class="kn">${code}</div>`;
+    grid.appendChild(cell);
+  }
+})();
+</script>
+</body>
+</html>
